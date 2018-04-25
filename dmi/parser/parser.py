@@ -15,9 +15,59 @@ Changelog:
 
 import struct
 
+from collections import (
+    OrderedDict,
+)
+
 from .type import (
     DMIType,
 )
+
+
+class SMBIOSEntryPointParser(object):
+
+    SM_FMT = struct.Struct('=4s4BHB5s5sBHIHB')
+    SM_SIZE = SM_FMT.size
+
+    ANCHOR_STRING = '_SM_'
+    ENTRY_POINT_LENGTH = SM_SIZE
+    INTERMEDIATE_ANCHOR_STRING = '_DMI_'
+
+    fields = (
+        'anchor_string',
+        'entry_point_structure_checksum',
+        'entry_point_length',
+        'smbios_major_version',
+        'smbios_minor_version',
+        'maximum_structure_size',
+        'entry_point_revision',
+        'formatted_area',
+        'intermediate_anchor_string',
+        'intermediate_checksum',
+        'structure_table_length',
+        'structure_table_address',
+        'number_of_smbios_structures',
+        'smbios_bcd_revision',
+    )
+
+    def parse(self, content, offset=0):
+        content = content[offset:offset+self.SM_SIZE]
+        if len(content) != self.SM_SIZE:
+            return
+
+        values = self.SM_FMT.unpack(content)
+        info = OrderedDict(zip(self.fields, values))
+
+        if info['anchor_string'] != self.ANCHOR_STRING:
+            return
+
+        if info['entry_point_length'] != self.ENTRY_POINT_LENGTH:
+            return
+
+        if info['intermediate_anchor_string'] != self.INTERMEDIATE_ANCHOR_STRING:
+            return
+
+        return info
 
 
 class DMIParser(object):

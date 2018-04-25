@@ -36,7 +36,7 @@ class BaseParser(object):
     TITLE = 'Base'
 
     TYPE_FMTS = create_type_formats([
-        ('', 'BBH'),
+        ('', '2BH'),
     ])
 
     fields = (
@@ -57,7 +57,15 @@ class BaseParser(object):
             if fmt.size == content_size:
                 break
 
-        values = fmt.unpack(content[:fmt.size])
+        extra_data = content[fmt.size:]
+        content = content[:fmt.size]
+
+        content_size = len(content)
+        if content_size < fmt.size:
+            content += b'\0' * (fmt.size-content_size)
+            content_size = fmt.size
+
+        values = fmt.unpack(content)
 
         data_inject = [
             ('title', self.TITLE),
@@ -68,5 +76,8 @@ class BaseParser(object):
         for field in self.string_fields:
             if field in info:
                 info[field] = strs[info[field]-1]
+
+        if data:
+            info['_extra_data'] = extra_data
 
         return info

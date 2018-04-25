@@ -16,11 +16,14 @@ Changelog:
 from . import (
     t0_bios,
     t1_system,
+    t2_baseboard,
     t3_chassis,
     t4_processor,
+    t11_oem_strings,
     t16_physical_memory_array,
     t17_memory_device,
     t19_memory_array_mapped_address,
-    t127_end_of_table,
     t32_system_boot,
+    t126_inactive,
+    t127_end_of_table,
 )

@@ -15,4 +15,5 @@ Changelog:
 
 from .parser import (
     DMIParser,
+    SMBIOSEntryPointParser,
 )
