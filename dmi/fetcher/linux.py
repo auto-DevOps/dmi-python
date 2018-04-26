@@ -16,6 +16,12 @@ Changelog:
 import os
 import struct
 
+from mmap import (
+    mmap,
+    PAGESIZE,
+    PROT_READ,
+)
+
 from ..parser import (
     DMIParser,
     SMBIOSEntryPointParser,
@@ -33,8 +39,18 @@ class DMIFetcher(object):
     def load_mem_area(self, offset, size):
         fmem = open(self.MEM_PATH, 'rb')
 
-        fmem.seek(offset)
-        area = fmem.read(size)
+        mm_offset = offset / PAGESIZE * PAGESIZE
+        offset_delta = offset - mm_offset
+
+        mm = mmap(
+            fileno=fmem.fileno(),
+            length=offset_delta+size,
+            offset=mm_offset,
+            prot=PROT_READ,
+        )
+
+        mm.seek(offset_delta)
+        area = mm.read(size)
 
         return area
 
