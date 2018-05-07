@@ -14,7 +14,7 @@ Changelog:
 '''
 
 
-class DMIFetch(object):
+class DMIFetcher(object):
 
     def fetch(self):
         return

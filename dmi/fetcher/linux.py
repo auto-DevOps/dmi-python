@@ -39,7 +39,7 @@ class DMIFetcher(object):
     def load_mem_area(self, offset, size):
         fmem = open(self.MEM_PATH, 'rb')
 
-        mm_offset = offset / PAGESIZE * PAGESIZE
+        mm_offset = offset // PAGESIZE * PAGESIZE
         offset_delta = offset - mm_offset
 
         mm = mmap(
@@ -77,7 +77,7 @@ class DMIFetcher(object):
 
         start = 0
         while True:
-            idx = area.find('_SM_', start)
+            idx = area.find(b'_SM_', start)
             if idx == -1:
                 break
 

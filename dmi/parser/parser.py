@@ -13,6 +13,7 @@ Changelog:
 
 '''
 
+import platform
 import struct
 
 from collections import (
@@ -29,9 +30,9 @@ class SMBIOSEntryPointParser(object):
     SM_FMT = struct.Struct('=4s4BHB5s5sBHIHB')
     SM_SIZE = SM_FMT.size
 
-    ANCHOR_STRING = '_SM_'
+    ANCHOR_STRING = b'_SM_'
     ENTRY_POINT_LENGTH = SM_SIZE
-    INTERMEDIATE_ANCHOR_STRING = '_DMI_'
+    INTERMEDIATE_ANCHOR_STRING = b'_DMI_'
 
     fields = (
         'anchor_string',
@@ -84,6 +85,8 @@ class DMIParser(object):
         '''
         idx = content.find(b'\0\0', start)
         strs = content[start:idx].split(b'\0')
+        if  platform.python_version_tuple()[0] == '3':
+            strs = [s.decode('utf8') for s in strs]
         return idx-start+2, strs
 
     def iter_dmi_table(self, content):
