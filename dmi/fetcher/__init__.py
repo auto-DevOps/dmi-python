@@ -20,6 +20,10 @@ if os == 'linux':
     from .linux import (
         DMIFetcher,
     )
+elif os == 'windows':
+    from .windows import (
+        DMIFetcher,
+    )
 else:
     from .fake import (
         DMIFetcher,
